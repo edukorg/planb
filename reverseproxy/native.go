@@ -164,6 +164,12 @@ func (rp *NativeReverseProxy) ridString(req *http.Request) string {
 }
 
 func (rp *NativeReverseProxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+	var requestStart = fastHeaderGet(req.Header, "X-Request-Start")
+	if requestStart != "" {
+		requestStart = fmt.Sprintf("%d", time.Now().UnixNano() / 1000000)
+		fastHeaderSet(req.Header, "X-Request-Start", requestStart)
+	}
+
 	if req.Host == "__ping__" && req.URL.Path == "/" {
 		err := rp.Router.Healthcheck()
 		if err != nil {
@@ -191,6 +197,7 @@ func (rp *NativeReverseProxy) ServeHTTP(rw http.ResponseWriter, req *http.Reques
 		return
 	}
 	req.Header["Planb-X-Forwarded-For"] = req.Header["X-Forwarded-For"]
+
 	rp.rp.ServeHTTP(rw, req)
 }
 
