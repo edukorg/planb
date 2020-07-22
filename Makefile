@@ -4,6 +4,8 @@ export GO111MODULE
 
 GO := "/usr/lib/go-1.11/bin/go"
 
+TAG = `git rev-parse --verify HEAD`
+
 setup:
 	$(GO) version
 
@@ -18,7 +20,15 @@ test: setup
 
 docker-build: build
 	git diff-index --quiet HEAD -- || exit 1
-	docker build . -t 629980096842.dkr.ecr.us-east-1.amazonaws.com/tsuru-planb:`git rev-parse --verify HEAD`
+	docker build . -t 629980096842.dkr.ecr.us-east-1.amazonaws.com/tsuru-planb:${TAG}
 
 docker-push: docker-build
-	docker push 629980096842.dkr.ecr.us-east-1.amazonaws.com/tsuru-planb:`git rev-parse --verify HEAD`
+	docker push 629980096842.dkr.ecr.us-east-1.amazonaws.com/tsuru-planb:${TAG}
+
+gcp-build:
+	git diff-index --quiet HEAD -- || exit 1
+	docker build . -t gcr.io/eduk-poc-stg/tsuru-planb:${TAG}
+
+gcp-push: gcp-build
+	gcloud auth configure-docker
+	docker push gcr.io/eduk-poc-stg/tsuru-planb:${TAG}
