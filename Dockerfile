@@ -7,4 +7,6 @@ RUN apk update && apk add libc6-compat
 
 ADD planb /bin/planb
 
+EXPOSE 8989
+
 ENTRYPOINT ["/bin/planb"]

@@ -19,10 +19,16 @@ test: setup
 	$(GO) test
 
 docker-build: build
+	docker build . -t eduk-planb:latest
+
+docker-start: build
+	docker run eduk-planb:latest /bin/planb --help
+
+aws-build: build
 	git diff-index --quiet HEAD -- || exit 1
 	docker build . -t 629980096842.dkr.ecr.us-east-1.amazonaws.com/tsuru-planb:${TAG}
 
-docker-push: docker-build
+aws-push: docker-build
 	docker push 629980096842.dkr.ecr.us-east-1.amazonaws.com/tsuru-planb:${TAG}
 
 gcp-build:
