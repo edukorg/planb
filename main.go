@@ -33,7 +33,7 @@ func handleSignals(server interface {
 	sigChan := make(chan os.Signal, 3)
 	go func() {
 		for sig := range sigChan {
-			if sig == os.Interrupt || sig == os.Kill {
+			if sig == os.Interrupt || sig == os.Kill || sig == syscall.SIGTERM {
 				server.Stop()
 				agent.Close()
 			}
@@ -45,7 +45,7 @@ func handleSignals(server interface {
 			}
 		}
 	}()
-	signal.Notify(sigChan, os.Interrupt, os.Kill, syscall.SIGUSR1, syscall.SIGUSR2)
+	signal.Notify(sigChan, os.Interrupt, os.Kill, syscall.SIGUSR1, syscall.SIGUSR2, syscall.SIGTERM)
 }
 
 func startProfiling() {

@@ -152,6 +152,7 @@ func (rp *NativeReverseProxy) Listen(listener net.Listener, tlsConfig *tls.Confi
 }
 
 func (rp *NativeReverseProxy) Stop() {
+	log.ErrorLogger.Print("ReverseProxy stop()")
 	for _, server := range rp.servers {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 		err := server.Shutdown(ctx)
