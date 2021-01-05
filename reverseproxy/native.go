@@ -154,7 +154,12 @@ func (rp *NativeReverseProxy) Listen(listener net.Listener, tlsConfig *tls.Confi
 func (rp *NativeReverseProxy) Stop() {
 	for _, server := range rp.servers {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-		server.Shutdown(ctx)
+		err := server.Shutdown(ctx)
+		if err != nil {
+			log.ErrorLogger.Print("Server Shutdown Failed:%+v", err)
+		} else {
+			log.ErrorLogger.Print("Server Shutdown Gracefully")
+		}
 		cancel()
 	}
 }
